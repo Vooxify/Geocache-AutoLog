@@ -242,4 +242,3 @@ def lunch_script(url_chosen):
 
 lunch_script("https://www.geocaching.com/")
 driver.quit()
-print(gc_codes)
