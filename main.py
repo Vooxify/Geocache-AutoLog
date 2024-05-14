@@ -26,11 +26,9 @@ headers = {
 }
 
 
-def write_on_multiple_lines(gc_name):
-    if gc_name == "None":
-        print("The script can't take geocache name from list but he can take GC codes."
-              "\nSo you need to refer you to the GC codes")
-    print(f'Write your message for "{gc_name}"\nTo finish, press Enter 2 times :')
+def write_on_multiple_lines(msg):
+
+    print(msg)
     input_text = ""
     while True:
         line = input()
@@ -84,7 +82,7 @@ def take_geocache_gc_codes():
             while True:
                 gc_code = input(f"{i} - ")
                 if gc_code == 'STOP':
-                    print(gc_codes)
+
                     break
                 gc_url = "https://www.geocaching.com/geocache/" + gc_code
                 driver.get(gc_url)
@@ -154,15 +152,18 @@ def input_log_type():
 def log_geocache_step_by_step_manual():
     messages = []
     for i in gc_codes.values():
-        message = write_on_multiple_lines(i)
+        message = write_on_multiple_lines(f'Write your message for "{i}"\nTo finish, press Enter 2 times :')
         messages.append(message)
 
     return [element.strip() for element in messages]
 
 
 def log_geocache_step_by_step_one_for_all():
-    message = input("Write the general message (applied to all logs !)")
-    return message
+    messages = []
+    message = write_on_multiple_lines("Write the general message (applied to all logs !)")
+    messages.append(message)
+
+    return messages
 
 
 def find_gc_text(soup):
@@ -186,10 +187,15 @@ def text_in_html(url, search_text):
 
 def stock_logs(messages):
     associate_code_with_message = {}
-    i = 0
-    for g_code, g_msg in gc_codes.items():
-        associate_code_with_message[g_code] = messages[i]
-        i += 1
+
+    if len(messages) == 1:
+        for g_code, g_msg in gc_codes.items():
+            associate_code_with_message[g_code] = messages
+    elif len(messages) >= 2:
+        i = 0
+        for g_code, g_msg in gc_codes.items():
+            associate_code_with_message[g_code] = messages[i]
+            i += 1
     return associate_code_with_message
 
 
@@ -208,7 +214,7 @@ def log(list):
 
         send_button = locate_element(id_or_class="class", tag='submit-button')
         input('You can modify the log, then press enter.')
-        #send_button.click()
+        send_button.click()
 
 
 
@@ -234,6 +240,8 @@ def lunch_script(url_chosen):
 
     take_geocache_gc_codes()
     msg = input_log_type()
+
+
 
     list_geocache_logs = stock_logs(msg)
     log(list_geocache_logs)
